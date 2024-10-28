@@ -8,7 +8,7 @@ LINE風チャットアプリ
 ；　https://okachimenko.sakura.ne.jp/test_kadai_chatApp/
 
 GitHub
-：確認中
+：https://0824mami.github.io/memo_App/
 
 ## ④アプリのログイン用IDまたはPassword（ある場合）
 - ID: 〇〇〇〇〇〇〇〇
