@@ -8,19 +8,27 @@
     background-color: #8cabd8;
 }
 
-p {
-    font-size: 14px;
-    margin-left: 10px;
+
+.division {
+    position: relative;
+    width: 700px;
+    height: 600px;
+    display: flex;
+    justify-content: space-between;
 }
 
-.hiddenBox {
-    position: relative;
-    width: 180px;
-    height: 10px;
-    /* display: none; */
+.calendar {
+    color: #201f1f;
 
-    /* display: none; */
-    background-color: (255, 255, 255, 0);
+}
+
+p {
+    color: #201f1f;
+    font-size: 14px;
+    padding-left: 15px;
+    background-color: #fff;
+    border-radius: 2.2rem;
+
 }
 
 .rcv_side {
@@ -35,15 +43,10 @@ p {
 }
 
 .snd_side textarea {
-    padding-top: 5px;
+    /* padding-top: 5px;
     padding-left: 20px;
-    top: 2px;
+    top: 2px; */
 
-}
-
-
-textarea {
-    border-radius: 2.2rem;
 }
 
 .snd_side {
@@ -51,6 +54,8 @@ textarea {
 }
 
 .inputArea {
+    position: absolute;
+    bottom: 10px;
     width: 250px;
     background-color: bisque;
 }
@@ -63,8 +68,10 @@ textarea {
     margin-left: 160px;
 }
 
-#deleteBtn {
-    bottom: 3px;
+#delete {
+    position: absolute;
+    top: 3px;
+    right: 455px;
 }
 
 #textSend {
