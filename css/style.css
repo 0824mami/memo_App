@@ -1,0 +1,72 @@
+.ベゼルばこ {
+    /* z-index: 2; */
+    /* position: absolute; */
+    /* top: 80px;
+    left: 50px; */
+    width: 250px;
+    height: 400px;
+    background-color: #8cabd8;
+}
+
+p {
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.hiddenBox {
+    position: relative;
+    width: 180px;
+    height: 10px;
+    /* display: none; */
+
+    /* display: none; */
+    background-color: (255, 255, 255, 0);
+}
+
+.rcv_side {
+    width: 180px;
+    margin-right: 60px;
+}
+
+.snd_side {
+
+    width: 180px;
+    margin-left: 60px;
+}
+
+.snd_side textarea {
+    padding-top: 5px;
+    padding-left: 20px;
+    top: 2px;
+
+}
+
+
+textarea {
+    border-radius: 2.2rem;
+}
+
+.snd_side {
+    position: absolute;
+}
+
+.inputArea {
+    width: 250px;
+    background-color: bisque;
+}
+
+.inputArea textarea {
+    border-radius: 0rem;
+}
+
+#sndBtn {
+    margin-left: 160px;
+}
+
+#deleteBtn {
+    bottom: 3px;
+}
+
+#textSend {
+    right: 3px;
+}
