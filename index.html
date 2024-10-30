@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>Firebase:v9:Chatアプリ</title>
     <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="./js/config.js"></script>
 </head>
 
 <body>
@@ -53,11 +54,13 @@
 
             <nav class="menu">
                 <ul>
-                    <li><a href="#">今日</a></li>
-                    <li><button type="button" id="backButton">＜</button></li>
-                    <li><button type="button" id="nextButton">＞</button></li>
-                    <!-- 先のボタンしか指定していない、ボタンにアンカーリンク入らない -->
-                    <li><a href="#">設定</a></li>
+                    <div class="menu_list">
+                        <a href="javascript:init();" id="todayBtn">今日</a>
+                        <li><button type="button" id="backButton">＜</button></li>
+                        <li><button type="button" id="nextButton">＞</button></li>
+                        <!-- 先のボタンしか指定していない、ボタンにアンカーリンク入らない -->
+                        <li><a href="#">設定</a></li>
+                    </div>
                 </ul>
             </nav>
 
@@ -77,6 +80,33 @@
                     <!-- JavaScriptで追加する行がここに入ります -->
                 </tbody>
             </table>
+            <div>
+                <input id="memo" type="text" size="30">
+                <a href="#" id="saveBtn">登録</a>
+            </div>
+            <div id="configArea">
+                <div id="configContents">
+                    <ul>
+                        <li class="configMenu">
+                            <h3>［背景色］</h3>
+                            <input id="bgColorR" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br>
+                            <input id="bgColorG" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br>
+                            <input id="bgColorB" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br><br>
+                            <a href="javascript:resetBackColor();">リセット</a>
+                        </li>
+                        <li class="configMenu">
+                            <h3>［データベース］</h3>
+                            <a href="#">リセット</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -119,6 +149,8 @@
 
             //messgage送信後にテキストをクリア（初期化）
             $("#text").val("");
+            $("#uname").val("");
+
 
             //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
             onChildAdded(dbRef, function (data) {
@@ -219,10 +251,35 @@
 
         document.getElementById('backButton').addEventListener('click', showbackMonth);
 
+        //当日かどうか判断
+        if (year == new Date().getFullYear()
+            && month == new Date().getMonth() + 1
+            && j == new Date().getDate()
+        ) {
+            str += ' id="today"';
+        }
 
 
         // 初期カレンダーを表示
         renderCalendar(currentYear, currentMonth);
+        // 日付選択時の処理
+        function selectDay(e) {
+
+            //選択された日付の年月日を取得
+            var year = e.getAttribute("year");
+            var month = e.getAttribute("month");
+            var day = e.getAttribute("day");
+
+            // 選択した日付を表示
+            showInputArea();
+            document.getElementById("selectInfo").innerHTML = '<h2>' + month + '月' + day + '日' + ' の予定</h2>';
+
+            //選択した日付をセッションストレージに格納
+            localStorage.setItem("day", day);
+
+            //選択した日付のデータ（同一インデックス）を表示
+            getDayData();
+        }
 
 
 
