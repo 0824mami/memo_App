@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>Firebase:v9:Chatアプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="./js/config.js"></script>
+</head>
+
+<body>
+
+    <!-- コンテンツ表示画面 -->
+    <div class="division">
+
+        <div class="viewArea" style="overflow: auto; height: 400px;">
+            <div class="rcv_side">
+                <div>chatroom</div>
+                <div>
+                    <!-- <textarea id="receiveArea" tyle="overflow: auto; height: 100px;"></textarea> -->
+                </div>
+            </div>
+            <div class="snd_side">
+                <div id="S_uname"></div>
+                <div>
+                    <div class="hiddenBox"></div>
+                    <!-- <textarea id="sendArea" style="overflow: auto; height: 100px;"></textarea> -->
+                </div>
+            </div>
+            <div id="deleteBtn"><button id="delete">削除</button></div>
+
+            <div class="inputArea">
+                <div> 名前：<input type="text" id="uname"></div>
+                <div>
+
+                    <textarea id="text" cols="30" rows="10"></textarea>
+
+                </div>
+                <div id="output">
+                    <button id="sndBtn">送信</button>
+                </div>
+            </div>
+
+
+            <!--/ コンテンツ表示画面 -->
+
+        </div>
+        <div class="calendar">
+            <header>
+                <h1>カレンダー</h1>
+                <h2 id="year"></h2>
+                <h3 id="month"></h3>
+            </header>
+
+            <nav class="menu">
+                <ul>
+                    <div class="menu_list">
+                        <a href="javascript:init();" id="todayBtn">今日</a>
+                        <li><button type="button" id="backButton">＜</button></li>
+                        <li><button type="button" id="nextButton">＞</button></li>
+                        <li><a href="callender練習/index.html">設定</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>日</th>
+                        <th>月</th>
+                        <th>火</th>
+                        <th>水</th>
+                        <th>木</th>
+                        <th>金</th>
+                        <th>土</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <!-- JavaScriptで追加する行がここに入ります -->
+                </tbody>
+            </table>
+            <div>
+                <input id="memo" type="text" size="30">
+                <a href="#" id="saveBtn">登録</a>
+            </div>
+            <div id="configArea">
+                <div id="configContents">
+                    <ul>
+                        <li class="configMenu">
+                            <h3>［背景色］</h3>
+                            <input id="bgColorR" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br>
+                            <input id="bgColorG" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br>
+                            <input id="bgColorB" type="range" value="255" step="1" min="0" max="255"
+                                onchange="changeBackColor();">
+                            <br><br>
+                            <a href="javascript:resetBackColor();">リセット</a>
+                        </li>
+                        <li class="configMenu">
+                            <h3>［データベース］</h3>
+                            <a href="#">リセット</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--ここからチャット-->
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JQuery -->
+    <!--** 以下Firebase **-->
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+            from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJzQSJZLC0y3jZ8MD84XzNm7rrZsyCzOo",
+            authDomain: "gsdemo-af5c8.firebaseapp.com",
+            projectId: "gsdemo-af5c8",
+            storageBucket: "gsdemo-af5c8.appspot.com",
+            messagingSenderId: "492826762005",
+            appId: "1:492826762005:web:8c141469ae2ea2047b671c"
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app); //RealtimeDBに接続
+        const dbRef = ref(db, "chat"); //RealtimeDB内の"chat"を使う
+        //データ登録(Click)
+        $("#sndBtn").on("click", function () {
+            const msg = {
+                uname: $("#uname").val(),
+                text: $("#text").val()
+            };
+            const id = push(dbRef);
+            set(id, msg);  //データ登録完了
+
+            //messgage送信後にテキストをクリア（初期化）
+            $("#text").val("");
+            $("#uname").val("");
+
+
+            //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
+            onChildAdded(dbRef, function (data) {
+                const msg = data.val();    //オブジェクトデータを取得し、変数msgに代入
+                const key = data.key;      //データのユニークキー（削除や更新に使用可能）
+                const h = `<p>${msg.uname}<br>${msg.text}</p>`;
+                $(".hiddenBox").append(h); // #outputを.sendAreaに変更
+            });
+
+        });
+        //データ登録(Enter)|
+
+        $("#text").on("keydown", function (evt) {
+            console.log(evt);        //e変数の中身を確認！！
+            if (evt.keyCode == 13) {   //EnterKey=13
+                const msg = {
+                    uname: $("#uname").val(),
+                    text: $("#text").val()
+                }
+                const newPostRef = push(dbRef); //ユニークKEYを生成
+                set(newPostRef, msg);           //"chat"にユニークKEYをつけてオブジェクトデータを登録
+            }
+        });
+
+        $("#deleteBtn").on('click', function () {
+            remove(dbRef);
+            // remove(newPostRef, msg);
+            //削除したいデータのユニークキーを指定
+            // const dbref = ref(db, "-OAIjV-OAIjrTAI3PmPpQ0jc2Ayu90WPbPHFyU4l");
+
+        });
+        // <!--ここまでチャット-->
+
+
+        // <!--カレンダーコーナー-->
+        // 現在の年と月を管理する変数
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth(); // 0から始まる
+
+        // 次の月を表示する関数
+        function showNextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) { // 月が12月を超えたら
+                currentMonth = 0;
+                currentYear++; // 年を1増やす
+            }
+            renderCalendar(currentYear, currentMonth);
+        }
+
+        // 前の月を表示する関数
+        function showbackMonth() {
+            currentMonth--;
+            if (currentMonth < 0) { // 月が1月を下回ったら
+                currentMonth = 11;
+                currentYear--; // 年を1減らす
+            }
+            renderCalendar(currentYear, currentMonth);
+        }
+
+        // カレンダーを描画する関数
+        function renderCalendar(year, month) {
+            // 月と年の表示を更新
+            document.getElementById('year').textContent = year;
+            document.getElementById('month').textContent = (month + 1) + '月';
+
+            const calendarBody = document.getElementById('calendar-body');
+            calendarBody.innerHTML = ''; // 既存のカレンダーをクリア
+
+            const startDate = new Date(year, month, 1); // 月の最初の日
+            const endDate = new Date(year, month + 1, 0); // 月の最後の日
+            const endDayCount = endDate.getDate(); // 月の末日
+            const startDay = startDate.getDay(); // 月の最初の日の曜日
+            let dayCount = 1; // 日にちのカウント
+
+            // カレンダーを6週分作成
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+
+                    // 最初の行の空白を調整
+                    if (i === 0 && j < startDay) {
+                        cell.textContent = ''; // 空白セル
+                    } else if (dayCount > endDayCount) {
+                        cell.textContent = ''; // 月末を超えた場合も空白セル
+                    } else {
+                        cell.textContent = dayCount;
+                        dayCount++;
+                    }
+                    row.appendChild(cell);
+                }
+                calendarBody.appendChild(row);
+            }
+        }
+
+        // 次の月ボタンにクリックイベントを追加
+        document.getElementById('nextButton').addEventListener('click', showNextMonth);
+
+        document.getElementById('backButton').addEventListener('click', showbackMonth);
+
+        //当日かどうか判断
+        if (year == new Date().getFullYear()
+            && month == new Date().getMonth() + 1
+            && j == new Date().getDate()
+        ) {
+            str += ' id="today"';
+        }
+
+
+        // 初期カレンダーを表示
+        renderCalendar(currentYear, currentMonth);
+        // 日付選択時の処理
+        function selectDay(e) {
+
+            //選択された日付の年月日を取得
+            var year = e.getAttribute("year");
+            var month = e.getAttribute("month");
+            var day = e.getAttribute("day");
+
+            // 選択した日付を表示
+            showInputArea();
+            document.getElementById("selectInfo").innerHTML = '<h2>' + month + '月' + day + '日' + ' の予定</h2>';
+
+            //選択した日付をセッションストレージに格納
+            localStorage.setItem("day", day);
+
+            //選択した日付のデータ（同一インデックス）を表示
+            getDayData();
+        }
+
+
+
+    </script>
+</body>
+
+</html>
